@@ -1,0 +1,74 @@
+1- Classer les commandes SQL
+
+Famille	Signification	Commandes
+LDD / DDL : Langage de définition des données (CREATE, ALTER, DROP, TRUNCATE)
+LMD / DML :	Langage de manipulation des données	(INSERT, UPDATE, DELETE)
+LID / DQL :	Langage d'interrogation des données	(SELECT)
+LCD / DCL :	Langage de contrôle des droits d'accès	(GRANT, REVOKE)
+TCL :	Langage de contrôle des transactions	(COMMIT, ROLLBACK)
+
+2-Clé primaire, cle étrangère et contrainte unique
+
+Une clé primaire identifie chaque ligne de manière unique dans une table.
+Elle ne peut pas contenir de NULL.
+Ses valeurs doivent être uniques.
+
+Une clé étrangère établit une relation entre deux tables en référençant une clé primaire ou une clé UNIQUE d'une autre table.
+
+Une contrainte unique interdit les doublons dans une colonne ou une combinaison de colonnes.
+
+En conclusion, la clé primaire identifie obligatoirement chaque ligne ; la clé étrangère garantit l'intégrité d'une relation ; une contrainte unique empêche les doublons.
+
+Dans Teranga Shop, la clé primaire de ligne_commande est id_commande, id_produit.
+C'est une clé primaire composée de deux colonnes parce qu'une commande peut contenir plusieurs produits et qu'un produit peut apparaître dans plusieurs commandes. La combinaison des deux identifiants permet d'identifier chaque association commande-produit de manière unique.
+
+3- NULL
+
+NULL représente une valeur absente, inconnue ou non renseignée.
+La condition WHERE email = NULL ne renvoie jamais aucune ligne parce que NULL ne se compare pas avec l'opérateur = comme une valeur ordinaire.
+
+4- L'ordre d'évolution des clauses du SGBD
+
+L'ordre d'écriture est :
+SELECT ...
+FROM ...
+WHERE ...
+GROUP BY ...
+HAVING ...
+ORDER BY ...
+LIMIT ...;
+
+Mais l'ordre logique d'évaluation est généralement :
+FROM : déterminer les tables sources.
+WHERE : filtrer les lignes.
+GROUP BY : former les groupes.
+HAVING : filtrer les groupes.
+SELECT : déterminer les colonnes et calculer les expressions à afficher.
+ORDER BY : trier les résultats.
+LIMIT : limiter le nombre de lignes retournées.
+
+WHERE est évalué logiquement avant SELECT. L'alias n'est donc pas encore défini lorsque le filtre est évalué.
+
+5- La différence entre DELETE FROM produit, TRUNCATE TABLE produit et DROP TABLE produit
+
+Avec DELETE FROM produit, toutes les lignes sont supprimées. On peut aussi utiliser WHERE pour ne supprimer que certaines lignes.
+
+Avec TRUNCATE TABLE produit, toutes les lignes sont supprimées sans supprimer la structure de la table. Dans MySQL, cette commande réinitialise généralement le compteur AUTO_INCREMENT et provoque un commit implicite.
+
+Avec Drop table produit, la table et sa structure sont supprimées. Elle ne peut plus être utilisée comme auparavant.
+
+6- Comprendre les contraintes dans le script
+
+Un client peut-il exister sans avoir passé de commande ?
+Oui.
+Justification : la table CLIENT ne dépend pas de la table COMMANDE. Rien n'oblige chaque client à posséder une commande.
+
+Une commande peut-elle exister sans vendeur ?
+Oui.
+Justification : id_vendeur INT
+La colonne ne comporte pas la contrainte NOT NULL. Elle peut donc contenir NULL, notamment pour une commande passée en ligne.
+
+Une commande peut-elle exister sans client ?
+Non.
+Justification : id_client INT NOT NULL
+La colonne ne peut pas contenir NULL. De plus, la clé étrangère impose que l'identifiant corresponde à un client existant.
